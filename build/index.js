@@ -38589,7 +38589,7 @@ function onResize() {
 
 // Set up scene
 
-var planeGeom = new THREE.PlaneGeometry(100,100,1000,1000)
+var planeGeom = new THREE.PlaneGeometry(10,10,100,100)
 var wireframeMat = new THREE.MeshBasicMaterial({"color": "white", "wireframe": true})
 var HoloMaterial = require("./HoloMaterial/HoloMaterial")
 var plane = new THREE.Points(planeGeom, HoloMaterial)
