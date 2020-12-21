@@ -46181,6 +46181,9 @@ var clock = new THREE.Clock()
 var dt
 
 var renderer = new THREE.WebGL1Renderer({antialias: true})
+var composer = new EffectComposer(renderer)
+composer.addPass(new RenderPass(scene, camera))
+composer.addPass(new EffectPass(camera, new BloomEffect()))
 renderer.xr.enabled = true
 document.body.appendChild(renderer.domElement)
 document.body.appendChild(VRButton.createButton(renderer))
@@ -46209,7 +46212,8 @@ scene.add(plane)
 function renderLoop() {
     dt = clock.getDelta()
     HoloMaterial.uniforms.time.value = clock.elapsedTime
-    renderer.render(scene, camera)
+    // renderer.render(scene, camera)
+    composer.render(dt)
 
     // plane.rotation.x += 0.05*dt
     // plane.rotation.y += 0.05*dt
