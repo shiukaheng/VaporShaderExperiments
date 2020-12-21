@@ -138,6 +138,6 @@ void main() {
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     gl_PointSize = 2.0;
     float wind_vector_length = distance(wind_vector, vec3(0, 0, 0));
-    float offset = abs(snoise(vec4(vec3(mvPosition.x+time*wind_vector.x, mvPosition.y+time*wind_vector.y, mvPosition.z+time*wind_vector.z) * wind_scale, time*wind_vector_length/2.)) + snoise(vec4(vec3(mvPosition.x+time*wind_vector.x, mvPosition.y+time*wind_vector.y, mvPosition.z+time*wind_vector.z) * wind_scale * 5., time*wind_vector_length/2.))/2.);
+    float offset = abs(snoise(vec4(vec3(position.x+time*wind_vector.x, position.y+time*wind_vector.y, position.z+time*wind_vector.z) * wind_scale, time*wind_vector_length/2.)) + snoise(vec4(vec3(position.x+time*wind_vector.x, position.y+time*wind_vector.y, position.z+time*wind_vector.z) * wind_scale * 5., time*wind_vector_length/2.))/2.);
     gl_Position = (projectionMatrix * mvPosition) + vec4(displacement_vector.x*offset, displacement_vector.y*offset, displacement_vector.z*offset, 0);
 }
