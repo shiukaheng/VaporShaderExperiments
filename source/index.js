@@ -11,7 +11,8 @@ document.body.appendChild(loadingScreen)
 
 var scene = new THREE.Scene()
 var camera = new THREE.PerspectiveCamera()
-camera.position.y = 1.8
+camera.position.y = 2
+camera.position.z = 10
 scene.add(camera)
 
 var audioListener = new THREE.AudioListener()
@@ -37,7 +38,7 @@ function onResize() {
 
 // Set up scene
 
-var planeGeom = new THREE.PlaneGeometry(10,10,200,200)
+var planeGeom = new THREE.PlaneGeometry(10,10,70,70)
 var wireframeMat = new THREE.MeshBasicMaterial({"color": "white", "wireframe": true})
 var HoloMaterial = require("./HoloMaterial/HoloMaterial")
 var plane = new THREE.Points(planeGeom, HoloMaterial)
@@ -53,7 +54,7 @@ function renderLoop() {
 
     // plane.rotation.x += 0.05*dt
     // plane.rotation.y += 0.05*dt
-    // plane.rotation.z += 0.05*dt
+    plane.rotation.z += 0.05*dt
 }
 
 loadingScreen.style.display = "none"

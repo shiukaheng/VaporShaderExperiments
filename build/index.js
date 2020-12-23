@@ -38192,8 +38192,27 @@
 
 },{}],2:[function(require,module,exports){
 module.exports = function parse(params){
-      var template = "void main() { \n" +" \n" +
-"    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); \n" +" \n" +
+      var template = "uniform float global_alpha; \n" +" \n" +
+" \n" +" \n" +
+"float getAlpha() { \n" +" \n" +
+"    if (gl_PointCoord.x<=0.625 && gl_PointCoord.x>=0.375) { \n" +" \n" +
+"        if (gl_PointCoord.y<=0.625 && gl_PointCoord.y>=0.375) { \n" +" \n" +
+"            return 1.0*global_alpha; \n" +" \n" +
+"        } else { \n" +" \n" +
+"            if (gl_PointCoord.y>0.625) { \n" +" \n" +
+"                return (1.-(gl_PointCoord.y-0.625)/0.375)*0.5*global_alpha; \n" +" \n" +
+"            } else { \n" +" \n" +
+"                return ((gl_PointCoord.y)/0.375)*0.5*global_alpha; \n" +" \n" +
+"            } \n" +" \n" +
+"        } \n" +" \n" +
+"    } else { \n" +" \n" +
+"        return 0.; \n" +" \n" +
+"    } \n" +" \n" +
+"     \n" +" \n" +
+"} \n" +" \n" +
+" \n" +" \n" +
+"void main() { \n" +" \n" +
+"    gl_FragColor = vec4(1.0, 1.0, 1.0, getAlpha()); \n" +" \n" +
 "} \n" 
       params = params || {}
       for(var key in params) {
@@ -38212,14 +38231,16 @@ module.exports = new THREE.ShaderMaterial({
         time: {value: 0.0},
         wind_scale: {value: 0.2},
         resolution: {value: new THREE.Vector2()},
-        displacement_vector: {value: new THREE.Vector3(0, 0.05, 0)},
-        wind_vector: {value: new THREE.Vector3(0.7, 0.7, 0)}
+        displacement_vector: {value: new THREE.Vector3(0, 0.1, 0)},
+        wind_vector: {value: new THREE.Vector3(0.7, 0.7, 0)},
+        global_alpha: {value: 0.5}
     },
     vertexShader: vs(),
     fragmentShader: fs(),
     transparent: true,
     side: THREE.DoubleSide,
-    blending: THREE.AdditiveBlending,
+    blending: THREE.NormalBlending,
+    depthTest: false
 })
 },{"./HoloFrag.fs":2,"./HoloVert.vs":4}],4:[function(require,module,exports){
 module.exports = function parse(params){
@@ -38361,7 +38382,7 @@ module.exports = function parse(params){
 " \n" +" \n" +
 "void main() { \n" +" \n" +
 "    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0); \n" +" \n" +
-"    gl_PointSize = 2.0; \n" +" \n" +
+"    gl_PointSize = 20.0; \n" +" \n" +
 "    float wind_vector_length = distance(wind_vector, vec3(0, 0, 0)); \n" +" \n" +
 "    float offset = abs(snoise(vec4(vec3(position.x+time*wind_vector.x, position.y+time*wind_vector.y, position.z+time*wind_vector.z) * wind_scale, time*wind_vector_length/2.)) + snoise(vec4(vec3(position.x+time*wind_vector.x, position.y+time*wind_vector.y, position.z+time*wind_vector.z) * wind_scale * 5., time*wind_vector_length/2.)) + snoise(vec4(vec3(position.x+time*wind_vector.x, position.y+time*wind_vector.y, position.z+time*wind_vector.z) * wind_scale * 50., time*wind_vector_length/2.))/3.); \n" +" \n" +
 "    gl_Position = (projectionMatrix * mvPosition) + vec4(displacement_vector.x*offset, displacement_vector.y*offset, displacement_vector.z*offset, 0); \n" +" \n" +
@@ -38563,7 +38584,8 @@ document.body.appendChild(loadingScreen)
 
 var scene = new THREE.Scene()
 var camera = new THREE.PerspectiveCamera()
-camera.position.y = 1.8
+camera.position.y = 2
+camera.position.z = 10
 scene.add(camera)
 
 var audioListener = new THREE.AudioListener()
@@ -38589,7 +38611,7 @@ function onResize() {
 
 // Set up scene
 
-var planeGeom = new THREE.PlaneGeometry(10,10,200,200)
+var planeGeom = new THREE.PlaneGeometry(10,10,70,70)
 var wireframeMat = new THREE.MeshBasicMaterial({"color": "white", "wireframe": true})
 var HoloMaterial = require("./HoloMaterial/HoloMaterial")
 var plane = new THREE.Points(planeGeom, HoloMaterial)
@@ -38605,7 +38627,7 @@ function renderLoop() {
 
     // plane.rotation.x += 0.05*dt
     // plane.rotation.y += 0.05*dt
-    // plane.rotation.z += 0.05*dt
+    plane.rotation.z += 0.05*dt
 }
 
 loadingScreen.style.display = "none"
